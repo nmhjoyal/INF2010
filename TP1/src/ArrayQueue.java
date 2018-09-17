@@ -10,7 +10,8 @@ public class ArrayQueue<AnyType> implements Queue<AnyType>
 	public ArrayQueue() 
 	{
 		//A completer
-		
+		size = 0;
+		table = (AnyType[]) new Object[size];
 	}
 	
 	//Indique si la file est vide
@@ -28,10 +29,13 @@ public class ArrayQueue<AnyType> implements Queue<AnyType>
 	//Retourne l'element en tete de file
 	//Retourne null si la file est vide
 	//complexité asymptotique: O(1)
-	public AnyType peek()
-	{
+	public AnyType peek() {
 		//A completer
-		
+		if (empty()) {
+			return null;
+		} else {
+			return table[startindex];
+		}
 	}
 	
 	//Retire l'element en tete de file
@@ -39,6 +43,10 @@ public class ArrayQueue<AnyType> implements Queue<AnyType>
 	public void pop() throws EmptyQueueException
 	{
 		//A completer
+		if(!empty()){
+			table[startindex++] = null;
+			size--;
+		}
 		
 	}
 	
@@ -48,7 +56,11 @@ public class ArrayQueue<AnyType> implements Queue<AnyType>
 	public void push(AnyType item)
 	{
 		//A completer
-		
+		if(size == table.length){
+			resize(2);
+		}
+
+		table[size++] = item;
 	}
    
 	//Redimensionne la file. La capacite est multipliee par un facteur de resizeFactor.
@@ -58,7 +70,15 @@ public class ArrayQueue<AnyType> implements Queue<AnyType>
 	private void resize(int resizeFactor)
 	{
 		//A completer
-		
+		if(empty()){
+			table = (AnyType[]) new Object[1];
+		}else {
+			AnyType[] old = table;
+			table = (AnyType[]) new Object[size * resizeFactor];
+			for (int i = 0; i < size; i++) {
+				table[i] = old[i];
+			}
+		}
 	}   
 }
 
