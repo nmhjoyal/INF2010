@@ -43,10 +43,12 @@ public class ArrayQueue<AnyType> implements Queue<AnyType>
 	public void pop() throws EmptyQueueException
 	{
 		//A completer
-		if(!empty()){
-			table[startindex++] = null;
-			size--;
-		}
+		if(!empty()) {
+            table[startindex++] = null;
+            size--;
+        }else{
+		    throw new EmptyQueueException();
+        }
 		
 	}
 	
@@ -56,11 +58,12 @@ public class ArrayQueue<AnyType> implements Queue<AnyType>
 	public void push(AnyType item)
 	{
 		//A completer
-		if(size == table.length){
+		if((size + startindex) == table.length){
 			resize(2);
 		}
 
-		table[size++] = item;
+		table[size() + startindex] = item;
+		size++;
 	}
    
 	//Redimensionne la file. La capacite est multipliee par un facteur de resizeFactor.
@@ -74,8 +77,9 @@ public class ArrayQueue<AnyType> implements Queue<AnyType>
 			table = (AnyType[]) new Object[1];
 		}else {
 			AnyType[] old = table;
-			table = (AnyType[]) new Object[size * resizeFactor];
-			for (int i = 0; i < size; i++) {
+			int cap = (size + startindex) * resizeFactor;
+			table = (AnyType[]) new Object[cap];
+			for (int i = 0; i < (size() + startindex); i++) {
 				table[i] = old[i];
 			}
 		}
