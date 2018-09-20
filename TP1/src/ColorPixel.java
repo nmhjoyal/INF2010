@@ -62,7 +62,7 @@ public class ColorPixel extends AbstractPixel
 	public ColorPixel toColorPixel()
 	{
 		// compléter
-		return new ColorPixel();
+		return new ColorPixel(rgb);
 		
 	}
 	

@@ -121,11 +121,11 @@ public class PixelMap
 		height = h; 
 		width = w;
 		
-		
+		imageData = new AbstractPixel[height][width];
 		// compl�ter
-		switch (type) {
+		switch (imageType) {
 		case BW:
-			imageData = new BWPixel[h][w];
+			
 			for(int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
 					imageData[i][j] = new BWPixel();
@@ -133,7 +133,7 @@ public class PixelMap
 			}
 			break;
 		case Color:
-			imageData = new ColorPixel[h][w];
+			
 			for(int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
 					imageData[i][j] = new ColorPixel();
@@ -141,7 +141,7 @@ public class PixelMap
 			}
 			break;
 		case Gray:
-			imageData = new GrayPixel[h][w];
+			
 			for(int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
 					imageData[i][j] = new GrayPixel();
@@ -149,7 +149,7 @@ public class PixelMap
 			}
 			break;
 		case Transparent:
-			imageData = new TransparentPixel[h][w];
+			
 			for(int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
 					imageData[i][j] = new TransparentPixel();
@@ -159,7 +159,6 @@ public class PixelMap
 		default:
 			throw new NoSuchElementException();
 		}
-		
 	}
 	
 	/**
