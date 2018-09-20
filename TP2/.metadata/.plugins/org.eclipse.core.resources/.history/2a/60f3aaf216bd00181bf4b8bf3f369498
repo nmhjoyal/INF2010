@@ -93,17 +93,14 @@ public class QuadraticSpacePerfectHashing<AnyType>
 		int m = array.size()*array.size();
 		
 		while(hasCollision) {
-			
 			hasCollision = false;
 			a = generator.nextInt(p - 1) + 1;
-			b = generator.nextInt(p - 1);
+			b = generator.nextInt(p - 1) + 1;
 			int index = 0;
 			
 			for(int i = 0; i < n; i++) {
-				
 				int key = array.get(i).hashCode();
 				index = ((a * key + b) % p) % m;
-				
 				if(!containsKey(key)) {
 					items[index] = array.get(i);
 				}else {

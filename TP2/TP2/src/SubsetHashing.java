@@ -3,7 +3,11 @@ import java.util.HashSet;
 public class SubsetHashing {
 	
 	public static int hash(int cle, int taille) {
-		return cle % taille;
+		if(cle < taille) {
+			return taille - cle;
+		}else {
+			return cle % taille;
+		}
 	}
 	
     /* Return true si Tab2 [] est un sous-ensemble de Tab1 [] */

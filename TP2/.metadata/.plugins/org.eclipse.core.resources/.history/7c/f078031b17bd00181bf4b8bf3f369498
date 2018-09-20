@@ -96,7 +96,7 @@ public class QuadraticSpacePerfectHashing<AnyType>
 			
 			hasCollision = false;
 			a = generator.nextInt(p - 1) + 1;
-			b = generator.nextInt(p - 1);
+			b = generator.nextInt(p - 1) + 1;
 			int index = 0;
 			
 			for(int i = 0; i < n; i++) {
