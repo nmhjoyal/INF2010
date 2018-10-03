@@ -41,7 +41,13 @@ public class QuadraticSpacePerfectHashing<AnyType>
 	{
 		// A completer
 		int index = ((a * x.hashCode() + b) % p) % items.length;
-		return (items[index] == x);
+		
+		if (items[index]!=null){
+			return (items[index].equals(x));
+		}
+		else{
+			return false;
+		}
 	}
 
 	public void remove (AnyType x) {
@@ -78,11 +84,12 @@ public class QuadraticSpacePerfectHashing<AnyType>
 		}
 
 		// A completer
-		items = (AnyType[]) new Object[array.size()*array.size()];
+		
 		boolean hasCollision = true;
 		int n = array.size();
 		int m = array.size()*array.size();
 		
+
 		while(hasCollision) {
 
             items = (AnyType[]) new Object[m];
@@ -96,7 +103,7 @@ public class QuadraticSpacePerfectHashing<AnyType>
 				int code = array.get(i).hashCode();
 				index = ((a * code + b) % p) % m;
 				
-				if(!containsKey(index)) {
+				if(!containsKey(code)) {
 					items[index] = array.get(i);
 				}else {
 					hasCollision = true;
