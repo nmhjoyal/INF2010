@@ -58,9 +58,7 @@ public class LinearSpacePerfectHashing<AnyType>
             if(data[index] != null) {
                 ArrayList<AnyType> temp = new ArrayList<AnyType>();
                 for (AnyType item : data[index].items) {
-					if(item!=null){
-						temp.add(item);
-					}
+                    temp.add(item);
                 }
                 temp.add(array.get(i));
                 data[index] = new QuadraticSpacePerfectHashing<AnyType>(temp);
