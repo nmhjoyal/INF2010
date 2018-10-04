@@ -43,6 +43,7 @@ public class QuadraticSpacePerfectHashing<AnyType>
 	{
 		// A completer
 		int index = ((a * x.hashCode() + b) % p) % items.length;
+
 		if(items[index] != null)
             return (items[index].equals(x));
         return false;
@@ -86,7 +87,7 @@ public class QuadraticSpacePerfectHashing<AnyType>
 		boolean hasCollision = true;
 		int n = array.size();
 		int m = array.size()*array.size();
-		
+
 		while(hasCollision) {
 
             items = (AnyType[]) new Object[m];
