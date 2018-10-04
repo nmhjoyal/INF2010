@@ -24,10 +24,20 @@ public class BinaryNode<T extends Comparable<? super T> > {
     public void insert(T item) {
     	if(this.data != null) {
     		if(item.compareTo(data) > 0) {
-	    		this.right.insert(item);
+    			if(this.right != null) {
+    				this.right.insert(item);
+	    		}else {
+	    			this.right = new BinaryNode<T>(item);
+	    		}
 	    	}else {
-	    		this.left.insert(item);
+	    		if(this.left != null) {
+	    			this.left.insert(item);
+	    		}else {
+	    			this.left = new BinaryNode<T>(item);
+	    		}
 	    	}
+    	}else {
+    		this.data = item;
     	}
     }
 
