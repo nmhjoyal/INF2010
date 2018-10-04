@@ -106,7 +106,13 @@ public class HashFunctions
     */
    public static ArrayList<Integer> randomIntegers(int length)
    {
-      return null;
+       Random generator = new Random( System.nanoTime() );
+       ArrayList<Integer> randomList = new ArrayList<Integer>(length);
+
+       for(int i = 0; i < length; i++){
+           randomList.add(generator.nextInt(p - 1));
+       }
+      return randomList;
    }
 }
 
