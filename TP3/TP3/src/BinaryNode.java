@@ -22,13 +22,11 @@ public class BinaryNode<T extends Comparable<? super T> > {
     // TODO: on ajoute une nouvelle donnee au bon endroit
     // O(log(n))
     public void insert(T item) {
-    	if(data == null)
-    		this.data = item;
-    	else {
-	    	if(item.compareTo(data) > 0) {
-	    		this.left = new BinaryNode<T>(item);
+    	if(this.data != null) {
+    		if(item.compareTo(data) > 0) {
+	    		this.right.insert(item);
 	    	}else {
-	    		this.right = new BinaryNode<T>(item);
+	    		this.left.insert(item);
 	    	}
     	}
     }
@@ -36,11 +34,11 @@ public class BinaryNode<T extends Comparable<? super T> > {
     // TODO: est-ce que l'item fais partie du noeuds courant
     // O(log(n))
     public boolean contains(T item) {
-    	if(this.data == null) {
+    	if(this.data != null) {
 	    	if(item.compareTo(data) > 0) {
-	    		this.left.contains(item);
-	    	}else if(item.compareTo(data) < 0){
 	    		this.right.contains(item);
+	    	}else if(item.compareTo(data) < 0){
+	    		this.left.contains(item);
 	    	}else {
 	    		return true;
 	    	}
@@ -51,16 +49,28 @@ public class BinaryNode<T extends Comparable<? super T> > {
     // TODO: on retourne la maximale de l'arbre
     // O(n)
     public int getHeight() {
-    	if(this.data == null)
-    		return -1;
-    	else
+    	if(this.data != null)
     		return 1 + Math.max(this.right.getHeight(), this.left.getHeight());
+    	else
+    		return -1;
     }
 
     // TODO: l'ordre d'insertion dans la liste est l'ordre logique
     // de manière que le plus petit item sera le premier inseré
     // O(n)
     public void fillListInOrder(List<BinaryNode<T>> result) {
-
+    	if(this.left == null) {
+    		result.add(this);
+    		if(this.right != null) {
+    			this.right.fillListInOrder(result);
+    		}
+    	}else {
+    		this.left.fillListInOrder(result);
+    	}
+    	
     }
+    
+//    public String toString() {
+//    	return this.data.toString();
+//    }
 }
