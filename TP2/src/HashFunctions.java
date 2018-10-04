@@ -109,8 +109,19 @@ public class HashFunctions
        Random generator = new Random( System.nanoTime() );
        ArrayList<Integer> randomList = new ArrayList<Integer>(length);
 
-       for(int i = 0; i < length; i++){
-           randomList.add(generator.nextInt(p - 1));
+       for (int i = 0; i < length; i++) {
+           int num = generator.nextInt(p - 1);
+           //Boucle qui vérifie pour des doublons
+           for(int j = 0; j < randomList.size(); j++) {
+               if(randomList.get(j) == num){
+                   //S'il y a un double, on génère un nouvel entier et on revérifie (j=0)
+                   num = generator.nextInt(p - 1);
+                   j = 0;
+               }
+           }
+
+           //Si aucun doublon, on ajoute l'entier à la liste
+           randomList.add(num);
        }
       return randomList;
    }

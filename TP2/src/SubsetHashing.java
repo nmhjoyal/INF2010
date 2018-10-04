@@ -39,10 +39,9 @@ public class SubsetHashing {
         
        //Complexite aymptotique :
        /*
-       Puisque la boucle qui a le plus d'itération est celle avec l'élément m, la compléxiteé
+       Puisque la boucle qui a le plus d'itérations est celle avec l'élément m, la compléxité
        asymptotique est O(m).
-
-       NOTE: is it 2*O(m)+O(n) ?
+       f(m,n) = 2m + n = O(m), puisque m > n
        */
        
 

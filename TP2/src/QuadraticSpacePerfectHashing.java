@@ -88,19 +88,23 @@ public class QuadraticSpacePerfectHashing<AnyType>
 		int n = array.size();
 		int m = array.size()*array.size();
 
+		//Boucle qui réalloue la mémoire au cas d'une collision
 		while(hasCollision) {
 
             items = (AnyType[]) new Object[m];
 			hasCollision = false;
 			a = generator.nextInt(p - 1) + 1;
 			b = generator.nextInt(p - 1);
-			int index = 0;
+			int index;
 
 			for(int i = 0; i < n; i++) {
+			    //Vérifie que l'élément du tableau n'est pas null
 				if(array.get(i) != null) {
                     int code = array.get(i).hashCode();
                     index = ((a * code + b) % p) % m;
 
+                    //Vérifie que le tableau ne contient pas déjà la clé générée
+                    // si oui, hasCollision remis à true et on regénère a et b
                     if (!containsKey(code)) {
                         items[index] = array.get(i);
                     } else {
@@ -122,9 +126,7 @@ public class QuadraticSpacePerfectHashing<AnyType>
                 result += "(" + getKey(items[i]) + "," + items[i].toString() + "), ";
             }
         }
-
-//        result = result.replace(result.substring(result.lastIndexOf(", ")), "");
-		return result; 
+        return result;
 	}
 
 	public void makeEmpty () {

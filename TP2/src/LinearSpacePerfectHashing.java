@@ -55,14 +55,20 @@ public class LinearSpacePerfectHashing<AnyType>
         for(int i = 0; i < n; i++) {
             int key = array.get(i).hashCode();
             index = ((a * key + b) % p) % n;
+
+            //Vérifie si l'objet QuadraticSpacePerfectHashing a déjà été initialisé à cet index
             if(data[index] != null) {
                 ArrayList<AnyType> temp = new ArrayList<AnyType>();
+
+                //Ajoute tous les éléments déjà existants plus le nouvel élément dans un Array temporaire
                 for (AnyType item : data[index].items) {
-					if(item!=null){
+					if(item != null){
 						temp.add(item);
 					}
                 }
                 temp.add(array.get(i));
+
+                //Réinitialise l'objet avec le nouveau tableau
                 data[index] = new QuadraticSpacePerfectHashing<AnyType>(temp);
 
             }else{
@@ -88,6 +94,7 @@ public class LinearSpacePerfectHashing<AnyType>
 	public boolean containsKey(int key)
 	{
 		// A completer
+        //Génère l'index du premier tableau, et puis appelle containsKey() de l'object QuadraticSpacePerfectHashing
         int index = ((a * key + b) % p) % data.length;
         if(data[index] != null)
             return (data[index].containsKey(key));
@@ -101,6 +108,7 @@ public class LinearSpacePerfectHashing<AnyType>
 	
 	public boolean containsValue (AnyType x) {
 		// A completer
+        //Génère l'index du premier tableau, et puis appelle containsValue() de l'object QuadraticSpacePerfectHashing
         int index = ((a * x.hashCode() + b) % p) % data.length;
         if(data[index] != null)
             return (data[index].containsValue(x));
@@ -118,6 +126,7 @@ public class LinearSpacePerfectHashing<AnyType>
 		
 		// A completer
         for (int i = 0; i < data.length; i++) {
+            //Pour chaque QuadraticSpacePerfectHashing du tableau on appelle toString de l'objet
             if (data[i] != null) {
                 result += data[i].toString();
                 result += "\n";
