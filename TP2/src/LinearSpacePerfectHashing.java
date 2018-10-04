@@ -1,3 +1,4 @@
+import java.util.Collections;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -54,10 +55,18 @@ public class LinearSpacePerfectHashing<AnyType>
         for(int i = 0; i < n; i++) {
             int key = array.get(i).hashCode();
             index = ((a * key + b) % p) % n;
-            if(data[index].containsKey(key)) {
+            if(data[index] != null) {
+                ArrayList<AnyType> temp = new ArrayList<AnyType>();
+                for (AnyType item : data[index].items) {
+                    temp.add(item);
+                }
+                temp.add(array.get(i));
+                data[index] = new QuadraticSpacePerfectHashing<AnyType>(temp);
 
             }else{
-                data[index] = new QuadraticSpacePerfectHashing<AnyType>();
+                ArrayList<AnyType> temp = new ArrayList<AnyType>();
+                temp.add(array.get(i));
+                data[index] = new QuadraticSpacePerfectHashing<AnyType>(temp);
             }
         }
 	}
@@ -78,7 +87,9 @@ public class LinearSpacePerfectHashing<AnyType>
 	{
 		// A completer
         int index = ((a * key + b) % p) % data.length;
-        return (data[index].containsKey(key));
+        if(data[index] != null)
+            return (data[index].containsKey(key));
+        return false;
 	}
 	
 	public int getKey (AnyType x) {
