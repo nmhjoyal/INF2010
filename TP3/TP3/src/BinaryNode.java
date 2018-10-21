@@ -44,11 +44,16 @@ public class BinaryNode<T extends Comparable<? super T> > {
     // TODO: est-ce que l'item fais partie du noeuds courant
     // O(log(n))
     public boolean contains(T item) {
+
     	if(this.data != null) {
 	    	if(item.compareTo(data) > 0) {
-	    		this.right.contains(item);
+	    	    if(this.right != null) {
+                    return this.right.contains(item);
+                }
 	    	}else if(item.compareTo(data) < 0){
-	    		this.left.contains(item);
+	    	    if(this.left != null) {
+                    return this.left.contains(item);
+                }
 	    	}else {
 	    		return true;
 	    	}
@@ -59,9 +64,19 @@ public class BinaryNode<T extends Comparable<? super T> > {
     // TODO: on retourne la maximale de l'arbre
     // O(n)
     public int getHeight() {
-    	if(this.data != null)
-    		return 1 + Math.max(this.right.getHeight(), this.left.getHeight());
-    	else
+    	if(this.data != null) {
+            if (this.right != null && this.left != null) {
+                return 1 + Math.max(this.right.getHeight(), this.left.getHeight());
+            } else{
+                if(this.right != null){
+                    return 1 + this.right.getHeight();
+                }else if (this.left != null){
+                    return 1 + this.left.getHeight();
+                }else{
+                    return 0;
+                }
+            }
+        }else
     		return -1;
     }
 
@@ -69,18 +84,20 @@ public class BinaryNode<T extends Comparable<? super T> > {
     // de manière que le plus petit item sera le premier inseré
     // O(n)
     public void fillListInOrder(List<BinaryNode<T>> result) {
-    	if(this.left == null) {
-    		result.add(this);
-    		if(this.right != null) {
-    			this.right.fillListInOrder(result);
-    		}
-    	}else {
-    		this.left.fillListInOrder(result);
+        if(this.left != null) {
+            this.left.fillListInOrder(result);
     	}
+
+    	result.add(this);
+
+        if(this.right != null) {
+            this.right.fillListInOrder(result);
+        }
+
     	
     }
     
-//    public String toString() {
-//    	return this.data.toString();
-//    }
+    public String toString() {
+        return this.data.toString();
+    }
 }
