@@ -149,11 +149,15 @@ public class TestBinary {
                 list.add(next);
             }
             Collections.sort(list);
+            
             String inOrder = tree.toStringInOrder();
             String sortedArray = Arrays.toString(list.toArray());
             isGood &= inOrder.equals(sortedArray);
+            
         }
         long duration = (System.nanoTime() - startTime);
+        System.out.println ("le temps utilisé est: "+duration);
+        System.out.println ("goal: < 1600000000");
         TestHelper.printTest(isGood && duration < 1600000000);
     }
 
