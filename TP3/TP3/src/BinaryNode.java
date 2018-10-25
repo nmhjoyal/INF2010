@@ -22,65 +22,84 @@ public class BinaryNode<T extends Comparable<? super T> > {
     // TODO: on ajoute une nouvelle donnee au bon endroit
     // O(log(n))
     public void insert(T item) {
-    	if(this.data != null) {
+    	if(data != null) {
     		if(item.compareTo(data) > 0) {
-    			if(this.right != null) {
-    				this.right.insert(item);
+    			if(right != null) {
+    				right.insert(item);
 	    		}else {
-	    			this.right = new BinaryNode<T>(item);
+	    			right = new BinaryNode<T>(item);
 	    		}
 	    	}else {
-	    		if(this.left != null) {
-	    			this.left.insert(item);
+	    		if(left != null) {
+	    			left.insert(item);
 	    		}else {
-	    			this.left = new BinaryNode<T>(item);
+	    			left = new BinaryNode<T>(item);
 	    		}
 	    	}
     	}else {
-    		this.data = item;
+    		data = item;
     	}
     }
 
     // TODO: est-ce que l'item fais partie du noeuds courant
     // O(log(n))
     public boolean contains(T item) {
-    	if(this.data != null) {
-	    	if(item.compareTo(data) > 0) {
-	    		this.right.contains(item);
+        if (data==null){
+            return false;
+        }
+        else {
+            if (data==item.data){
+                return true;
+            }
+	    	else if(item.compareTo(data) > 0) {
+	    	    if(right != null) {
+                    return right.contains(item);
+                } else return false;
 	    	}else if(item.compareTo(data) < 0){
-	    		this.left.contains(item);
-	    	}else {
-	    		return true;
-	    	}
+	    	    if(left != null) {
+                    return left.contains(item);
+                } else return false;
+            }
+            
     	}
-    	return false;
     }
 
     // TODO: on retourne la maximale de l'arbre
     // O(n)
     public int getHeight() {
-    	if(this.data != null)
-    		return 1 + Math.max(this.right.getHeight(), this.left.getHeight());
-    	else
-    		return -1;
+        if(this.data==null){
+            return 0;
+        }
+        else{
+            int LeftHeight = left.getHeight();
+            int RightHeight = right.getHeight();
+            if(LeftHeight>=RightHeight){
+                return 1+LeftHeight;
+            }
+            else{
+                return 1+RightHeight;
+            }
+        }
     }
 
     // TODO: l'ordre d'insertion dans la liste est l'ordre logique
     // de manière que le plus petit item sera le premier inseré
     // O(n)
     public void fillListInOrder(List<BinaryNode<T>> result) {
-    	if(this.left == null) {
-    		result.add(this);
-    		if(this.right != null) {
-    			this.right.fillListInOrder(result);
-    		}
-    	}else {
-    		this.left.fillListInOrder(result);
+        if(this.left != null) {
+            this.left.fillListInOrder(result);
     	}
+
+    	result.add(this);
+
+        if(this.right != null) {
+            this.right.fillListInOrder(result);
+        }
+
     	
     }
     
-//    public String toString() {
-//    	return this.data.toString();
-//    }
+    public String toString() {
+        return this.data.toString();
+    }
 }
