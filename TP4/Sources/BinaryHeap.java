@@ -232,13 +232,29 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
     public static <AnyType extends Comparable<? super AnyType>>
 				   void heapSort( AnyType[] a )
     {
-	//COMPLETEZ
+	    //COMPLETEZ
+        for( int i = a.length / 2; i >= 0; i-- )
+            percolateDownMinHeap( a, i, a.length, true);
+        for( int i = a.length - 1; i > 0; i-- )
+        {
+            swapReferences( a, 0, i );
+            percolateDownMinHeap( a, 0, i, true);
+        }
+
+
     }
     
     public static <AnyType extends Comparable<? super AnyType>>
 				   void heapSortReverse( AnyType[] a )
     {
-	//COMPLETEZ
+	    //COMPLETEZ
+        for( int i = a.length / 2; i >= 0; i-- )
+            percolateDownMaxHeap( a, i, a.length, true);
+        for( int i = a.length - 1; i > 0; i-- )
+        {
+            swapReferences( a, 0, i );
+            percolateDownMaxHeap( a, 0, i, true);
+        }
     }
     
     public String nonRecursivePrintFancyTree()
