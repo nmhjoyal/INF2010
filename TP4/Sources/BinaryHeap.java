@@ -1,3 +1,5 @@
+import org.omg.CORBA.Any;
+
 import java.util.*;
 
 
@@ -176,12 +178,16 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
     	for(; hole * 2 <= size; hole = child) {
     		child = hole * 2; //fils de GAUCHE
     		if(child != size && array[child + 1].compareTo(array[child]) < 0) { //if fils de GAUCHE < fils de DROITE, child devient fils de droite
-    			child++;
-    		}
-    		if(array[child].compareTo(temp) < 0)
-    			array[hole] = array[child];
-    		else
-    			break;
+                child++;
+            }
+            if(array[child] != null) {
+                if (array[child].compareTo(temp) < 0)
+                    array[hole] = array[child];
+                else
+                    break;
+            }else{
+                break;
+            }
     					
     	}
     	
@@ -259,16 +265,26 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
     
     public String nonRecursivePrintFancyTree()
     {
-		String outputString = "";
-		
+		String outputString = "|__";
 		//COMPLETEZ
-		String _prefix = "|__";
-		outputString += _prefix + this.array[1];
-		
-		for(int i = 2; i < currentSize; i+=2) {
-			outputString += _prefix + this.array[i];
-			outputString += _prefix + this.array[i];
-		}
+		String _prefix = "";
+		int treeIndex = 1;
+		while(treeIndex > 0) {
+            outputString += _prefix + this.array[treeIndex] + "\n";
+            while (treeIndex <= this.currentSize) {
+                if(treeIndex % 2 == 0)
+                    _prefix += "   |";
+                else
+                    _prefix += "   ";
+                outputString += _prefix + this.array[2 * treeIndex + 1] + "\n";
+                treeIndex = 2 * treeIndex + 1;
+            }
+            if(2 * treeIndex <= this.currentSize)
+                outputString += _prefix + this.array[2 * treeIndex] + "\n";
+
+            treeIndex = (treeIndex/2) - 1;
+            System.out.println(treeIndex);
+        }
 	
 		return outputString;
     }
@@ -280,7 +296,7 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
     
     private String printFancyTree( int index, String prefix)
     {
-		String outputString = "";
+		String outputString;
 		
 		outputString = prefix + "|__";
 		
@@ -308,20 +324,20 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
     
     private class HeapIterator implements Iterator {
 	
-	public boolean hasNext() {
-	    //COMPLETEZ
-		return true;
-	}
+        public boolean hasNext() {
+            //COMPLETEZ
+            return true;
+        }
 
-	public Object next() throws NoSuchElementException, 
-				    ConcurrentModificationException, 
-				    UnsupportedOperationException {
-	    //COMPLETEZ
-		return new Object();
-	}
-	
-	public void remove() {
-	    throw new UnsupportedOperationException();
-	}
+        public Object next() throws NoSuchElementException,
+                        ConcurrentModificationException,
+                        UnsupportedOperationException {
+            //COMPLETEZ
+            return new Object();
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     }
 }
