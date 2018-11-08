@@ -80,7 +80,7 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
     		percolateDownMinHeap(1, currentSize);
     	else
     		percolateDownMaxHeap(1, currentSize);
-    	
+    
     	return elTete;
     }
     
@@ -265,28 +265,44 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
     
     public String nonRecursivePrintFancyTree()
     {
-		String outputString = "|__";
-		//COMPLETEZ
-		String _prefix = "";
-		int treeIndex = 1;
-		while(treeIndex > 0) {
-            outputString += _prefix + this.array[treeIndex] + "\n";
-            while (treeIndex <= this.currentSize) {
-                if(treeIndex % 2 == 0)
-                    _prefix += "   |";
-                else
-                    _prefix += "   ";
-                outputString += _prefix + this.array[2 * treeIndex + 1] + "\n";
-                treeIndex = 2 * treeIndex + 1;
-            }
-            if(2 * treeIndex <= this.currentSize)
-                outputString += _prefix + this.array[2 * treeIndex] + "\n";
+        String outputString = "";
+        String _prefix = "";
+        int treeIndex = 1;
+        Boolean fromLeftChild = false;
+        
+        while (treeIndex > 0) {
+            outputString += _prefix + "|__" + array[treeIndex] + "\n";
 
-            treeIndex = (treeIndex/2) - 1;
-            System.out.println(treeIndex);
+            // Enfant de gauche
+            if (treeIndex * 2 <= currentSize) {
+                _prefix += fromLeftChild ? "|  " : "   ";
+                fromLeftChild = true;
+                treeIndex *= 2;
+            }
+            // Voisin de la derniere valeur imprimée
+            else if (fromLeftChild & treeIndex + 1 <= currentSize) {
+                fromLeftChild = false;
+                treeIndex++;
+            }
+            // Si pas d'enfants gauche ni voisin
+            else {
+                // On trouve l'enfant gauche le plus proche 
+                do {
+                    treeIndex = treeIndex /2;
+                    if(treeIndex > 0) {
+                        _prefix = _prefix.substring(0, _prefix.length() - 3);
+                    }
+
+                } while(treeIndex % 2 != 0 & treeIndex > 0);
+                
+                if(treeIndex > 0) {
+                    // L'index est maintenant sur le voisin de cet enfant
+                    treeIndex +=1;
+                }
+                fromLeftChild =  false;
+            }
         }
-	
-		return outputString;
+	    return outputString;
     }
     
     public String printFancyTree()
@@ -323,17 +339,30 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
     }
     
     private class HeapIterator implements Iterator {
+
+        int modificationsHI;
+        int position;
+
+        public HeapIterator() {
+            this.modificationsHI = modifications;
+            this.position = 0;
+        }
 	
         public boolean hasNext() {
             //COMPLETEZ
-            return true;
+            return ++position <= currentSize;
         }
 
         public Object next() throws NoSuchElementException,
                         ConcurrentModificationException,
                         UnsupportedOperationException {
             //COMPLETEZ
-            return new Object();
+            if(!hasNext())
+                throw new NoSuchElementException();
+            if(modificationsHI != modifications)
+                throw new ConcurrentModificationException();
+            else
+                return array[++position];
         }
 
         public void remove() {

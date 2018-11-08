@@ -22,22 +22,23 @@ public class BinaryNode<T extends Comparable<? super T> > {
     // TODO: on ajoute une nouvelle donnee au bon endroit
     // O(log(n))
     public void insert(T item) {
-    	if(data != null) {
+        if(data==null){
+            data=item;
+        }
+    	else {
     		if(item.compareTo(data) > 0) {
-    			if(right != null) {
-    				right.insert(item);
+    			if(right == null) {
+                    right = new BinaryNode<T>(item);
 	    		}else {
-	    			right = new BinaryNode<T>(item);
+                    right.insert(item);
 	    		}
 	    	}else {
-	    		if(left != null) {
-	    			left.insert(item);
-	    		}else {
+	    		if(left == null) {
 	    			left = new BinaryNode<T>(item);
+	    		}else {
+	    			left.insert(item);
 	    		}
 	    	}
-    	}else {
-    		data = item;
     	}
     }
 
@@ -71,14 +72,20 @@ public class BinaryNode<T extends Comparable<? super T> > {
             return 0;
         }
         else{
-            int LeftHeight = left.getHeight();
-            int RightHeight = right.getHeight();
+            
+                int LeftHeight = left.getHeight(); 
+            
+            
+            
+                int RightHeight = right.getHeight(); 
+            
             if(LeftHeight>=RightHeight){
                 return 1+LeftHeight;
             }
             else{
                 return 1+RightHeight;
             }
+            
         }
     }
 
@@ -86,20 +93,18 @@ public class BinaryNode<T extends Comparable<? super T> > {
     // de manière que le plus petit item sera le premier inseré
     // O(n)
     public void fillListInOrder(List<BinaryNode<T>> result) {
-        if(this.left != null) {
-            this.left.fillListInOrder(result);
+        if(left != null) {
+            left.fillListInOrder(result);
     	}
 
-    	result.add(this);
-
-        if(this.right != null) {
-            this.right.fillListInOrder(result);
+        result.add(this);
+        
+        if(right != null) {
+            right.fillListInOrder(result);
         }
-
-    	
     }
     
     public String toString() {
-        return this.data.toString();
+        return data.toString();
     }
 }

@@ -9,9 +9,9 @@ public class Main {
 //
         TestCompany testCompany = new TestCompany();
         testCompany.test();
-
+        
         /*NOTRE PROPRE TEST*/
-
+        
        BinarySearchTree<Integer> treeTest = new BinarySearchTree<Integer>(50);
        treeTest.insert(25);
        treeTest.insert(2);
@@ -55,5 +55,6 @@ public class Main {
        System.out.println(compTree.getWorstChildMoney() +"\n");
        System.out.println(compTree.getMoney() +"\n");
        System.out.println(compTree.getTreeInOrder() +"\n");
+       
     }
 }

@@ -57,7 +57,8 @@ public class BinarySearchTree<T extends Comparable<? super T> > {
     	String result = "[";
     	for (BinaryNode<T> node : list) {
     		result += node.toString() + ", ";
-    	}
+        }
+        
         return (result.substring(0, result.lastIndexOf(",")) + "]");
     }
 }
