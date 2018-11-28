@@ -23,7 +23,7 @@ public class Bellman {
 	
 	public void shortestPath() {
 		// Compl�ter
-		
+
 		Vector<Double> init = new Vector<>();
 		Vector<Integer> initR = new Vector<>();
 		
@@ -47,7 +47,7 @@ public class Bellman {
 			Vector<Double> next = new Vector<>();
 			Vector<Integer> nextRLine = new Vector<>();
 			
-			//On prend les valeurs de la derniere ligne
+			//On reprend les valeurs de la ligne précédente
 			for(int i = 0; i < graph.getNodes().size(); i++) {
 				if(i == sourceNode.getId()) {
 					next.add(0.0);
@@ -57,26 +57,40 @@ public class Bellman {
 					nextRLine.add(rTable.get(k - 1).get(i));
 				}
 			}
-			piTable.add(next);
-			rTable.add(nextRLine);
-			
+
+			//Retourne la liste les arcs sortants du prochain noeud (baseNode)
 			List<Edge> outEdges = graph.getOutEdges(baseNode);
+
+			//Si le noeud ne comporte aucun arc sortant, on brise l'algorithme
 			if(outEdges.isEmpty()) {
 				break;
 			}
-			
+
 			for(Edge edge : outEdges) {
-				boolean whatevs = piTable.get(k - 1).get(baseNode.getId()) + edge.getDistance() < piTable.get(k - 1).get(baseNode.getId());
-				if(piTable.get(k).get(baseNode.getId()) != graph.inf && whatevs) {
-					next.set(edge.getDestination().getId(), piTable.get(k - 1).get(baseNode.getId()) + edge.getDistance());
-				}
-				else
-					next.set(edge.getDestination().getId(), edge.getDistance());
-				nextRLine.set(edge.getDestination().getId(),baseNode.getId());
+                if(edge.getDestination().getId() != sourceNode.getId()) {
+                    boolean estPlusPetit = piTable.get(k - 1).get(baseNode.getId()) + edge.getDistance() < piTable.get(k - 1).get(baseNode.getId());
+                    if (next.get(baseNode.getId()) != Graph.inf && estPlusPetit)
+                        next.set(edge.getDestination().getId(), piTable.get(k - 1).get(baseNode.getId()) + edge.getDistance());
+                    else
+                        next.set(edge.getDestination().getId(), edge.getDistance());
+
+                    nextRLine.set(edge.getDestination().getId(), baseNode.getId());
+                }
 			}
-			
-			piTable.set(k, next);
-			rTable.set(k,nextRLine);
+
+			//Test l'égalité des lignes
+            boolean ligneEstPareille = true;
+            for(int i = 0; i < graph.getNodes().size(); i++){
+                if(!next.get(i).equals(piTable.get(k - 1).get(i))){
+                    ligneEstPareille = false;
+                    break;
+                }
+            }
+            //On casse l'algorithme si les deux dernières lignes sont pareilles
+            if(ligneEstPareille)
+                break;
+            piTable.add(next);
+            rTable.add(nextRLine);
 			k++;
 			baseNode = graph.getNodeById(k);
 		}
@@ -85,6 +99,71 @@ public class Bellman {
 	
 	public void  diplayShortestPaths() {
 		//Compl�ter
+        StringBuilder chemin = new StringBuilder("\n\n");
+        Stack<Node> path = new Stack<>();
+        int ligne = this.rTable.size() - 1;
+        int noeud = this.sourceNode.getId();
+        boolean contientNegatif = false;
+
+        if(this.rTable.get(this.rTable.size() - 1).get(this.sourceNode.getId()) == this.sourceNode.getId() &&
+                this.piTable.get(this.rTable.size() - 1).get(this.sourceNode.getId()) < 0){
+            chemin.append("==> Le graphe contient un circuit de cout négatif :\n");
+            contientNegatif = true;
+            while(this.rTable.get(ligne).get(noeud) != -1){
+                path.push(this.graph.getNodeById(noeud));
+                noeud = this.rTable.get(ligne).get(noeud);
+                ligne--;
+            }
+
+        }else {
+            chemin.append("==> Les chemins sont :");
+            for(int i = this.graph.getNodes().size() - 1; i >= 0; i--){
+                ligne = this.rTable.size() - 1;
+                noeud = i;
+                if(this.rTable.get(ligne).get(noeud) != -1){
+                    while(this.rTable.get(ligne).get(noeud) != -1){
+                        path.push(this.graph.getNodeById(noeud));
+                        noeud = this.rTable.get(ligne).get(noeud);
+                        ligne--;
+                    }
+                    path.push(this.sourceNode);
+                }
+            }
+        }
+
+        if(!path.empty()){
+            if(contientNegatif){
+                chemin.append("[" + sourceNode.getName() + " - " + sourceNode.getName() + "] : ");
+                chemin.append(path.pop().getName());
+                while (!path.empty()) {
+                    chemin.append(" -> ");
+                    chemin.append(path.pop().getName());
+                }
+            }else{
+                StringBuilder crochets = new StringBuilder(chemin + "\n[" + path.pop().getName() + " - ");
+                Node dernier = new Node(-1,"");
+                chemin = new StringBuilder(sourceNode.getName());
+
+                while(!path.empty()) {
+                    if (path.peek().getId() != this.sourceNode.getId()) {
+                        chemin.append(" -> ");
+                        dernier = path.pop();
+                        chemin.append(dernier.getName());
+                    } else {
+                        crochets.append(dernier.getName() + "] " +
+                                        this.piTable.get(this.piTable.size() - 1).get(dernier.getId()) + " : ");
+                        crochets.append(chemin);
+                        crochets.append("\n[" + path.pop().getName() + " - ");
+                        chemin = new StringBuilder(sourceNode.getName());
+                    }
+                }
+                crochets.append(dernier.getName() + "] " +
+                        this.piTable.get(this.piTable.size() - 1).get(dernier.getId()) + " : ");
+                crochets.append(chemin);
+                chemin = new StringBuilder(crochets);
+            }
+        }
+        System.out.println(chemin);
 	}
 
 	public void displayTables() {
