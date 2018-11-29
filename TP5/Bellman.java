@@ -41,6 +41,7 @@ public class Bellman {
 		
 		int k = 1;
 		Node baseNode = sourceNode;
+		//Variable servant à casser l'algorithme
 		boolean breakAlgo = false;
 		while (k <= graph.getNodes().size()) {
 
@@ -66,6 +67,8 @@ public class Bellman {
                 } else {
                     baseNode = graph.getNodeById(baseNode.getId() + 1);
                 }
+                //On casse la boucle si les arcs sortants sont nuls et que le prochain noeud
+                // est le noeud source
                 if(baseNode == sourceNode)
                     breakAlgo = true;
                 continue;
@@ -84,6 +87,8 @@ public class Bellman {
                     next.set(edge.getDestination().getId(), piTable.get(k - 1).get(edge.getSource().getId()) + edge.getDistance());
                     nextRLine.set(edge.getDestination().getId(), edge.getSource().getId());
 
+                    //Gestion de valeurs négatives : Si le noeud source a changé la distance d'un noeud déjà rencontré,
+                    // on remet le noeud de base à sa destination pour la prochaine itération
                     if(next.get(edge.getDestination().getId()) < piTable.get(k - 1).get(edge.getDestination().getId())){
                         baseNode = edge.getDestination();
                         continue;
@@ -99,12 +104,14 @@ public class Bellman {
 
                 }
             }
-            //On casse l'algorithme si les deux dernières lignes sont pareilles
+
+            //On ajoute la ligne et incrémente k seulement si celle-là est différente
             if(!ligneEstPareille) {
                 piTable.add(next);
                 rTable.add(nextRLine);
                 k++;
             }else{
+                //Si les lignes sont pareils, nous voulons passer au prochain noeud s'il existe
                 if (baseNode.getId() + 1 >= graph.getNodes().size()) {
                     baseNode = graph.getNodeById((baseNode.getId() + 1) - graph.getNodes().size());
                 } else {
@@ -136,12 +143,13 @@ public class Bellman {
             if(this.rTable.get(ligne).get(noeud) != -1){
                 //Jusqu'à ce que l'on trouve un -1 (indice de noeud impossible) comme parent,
                 // on ajoute l'indice à la pile
-
                 while(this.rTable.get(ligne).get(noeud) != -1 && !contientBoucle){
                     if(pileChemin.contains(this.graph.getNodeById(noeud))) {
+                        //Si le noeud rencontré existe déjà, nous avons une boucle
                         contientBoucle = pileChemin.contains(this.graph.getNodeById(noeud));
+                        //Pour faciliter l'affichage
                         indiceBoucle = this.graph.getNodeById(noeud).getId();
-                        pathBoucle = i;
+                        pathBoucle = path.size();
                     }
                     pileChemin.push(this.graph.getNodeById(noeud));
                     noeud = this.rTable.get(ligne).get(noeud);
@@ -158,11 +166,11 @@ public class Bellman {
             chemin.append("\n\n==> Le graphe contient un circuit de coût négatif :\n");
             Node noeudBase = graph.getNodeById(indiceBoucle);
             chemin.append("[" + noeudBase.getName() + " - " + noeudBase.getName() + "] : ");
-            path.get(pathBoucle -1).pop();
-            chemin.append(path.get(pathBoucle -1).pop().getName());
-            while(!path.get(pathBoucle -1).empty() && !path.get(pathBoucle -1).peek().equals(noeudBase)){
+            path.get(pathBoucle).pop();
+            chemin.append(path.get(pathBoucle).pop().getName());
+            while(!path.get(pathBoucle).empty() && !path.get(pathBoucle).peek().equals(noeudBase)){
                 chemin.append(" -> ");
-                chemin.append(path.get(pathBoucle -1).pop().getName());
+                chemin.append(path.get(pathBoucle).pop().getName());
             }
             chemin.append(" -> ");
             chemin.append(noeudBase.getName());
@@ -191,10 +199,13 @@ public class Bellman {
 	 //Compl�ter
 		System.out.print("<< PiTable >>:\n\t\t");
 		int k = 0;
+		//Première ligne
 		for(Node node : graph.getNodes()) {
 			System.out.print(node.getName());
 			System.out.print("\t");
 		}
+
+		//Données de la table Pi
 		System.out.print("\n");
 		for(Vector<Double> vec : piTable) {
 		    System.out.print(k + "\t:\t");
@@ -215,6 +226,8 @@ public class Bellman {
 			System.out.print(node.getName());
 			System.out.print("\t");
 		}
+
+		//Données de la table R
 		System.out.print("\n");
 		for(Vector<Integer> vec : rTable) {
             System.out.print(k + "\t:\t");
