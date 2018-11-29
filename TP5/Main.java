@@ -6,7 +6,7 @@ public class Main {
 		g.readFromFile("./graphe.txt",",");
 		// Exerice 2: calcul du plus court chemin de source vers tous les sommet
 		Bellman bl = new Bellman(g);
-		Node source=g.getNodeByName("B");
+		Node source=g.getNodeByName("S");
 		bl.setSourceNode(source);
 		bl.shortestPath();
 		bl.displayTables();
