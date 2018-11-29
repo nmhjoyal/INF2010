@@ -40,22 +40,18 @@ public class Bellman {
 		rTable.add(initR);
 		
 		int k = 1;
-		Node baseNode = graph.getNodeById(sourceNode.getId());
-		
+		Node baseNode = sourceNode;
+		boolean breakAlgo = false;
 		while (k <= graph.getNodes().size()) {
+
 			//Init nouvelle ligne
 			Vector<Double> next = new Vector<>();
 			Vector<Integer> nextRLine = new Vector<>();
 			
 			//On reprend les valeurs de la ligne précédente
 			for(int i = 0; i < graph.getNodes().size(); i++) {
-				if(i == sourceNode.getId()) {
-					next.add(0.0);
-					nextRLine.add(-1);
-				}else {
-					next.add(piTable.get(k - 1).get(i));
-					nextRLine.add(rTable.get(k - 1).get(i));
-				}
+                next.add(piTable.get(k - 1).get(i));
+                nextRLine.add(rTable.get(k - 1).get(i));
 			}
 
 			//Retourne la liste les arcs sortants du prochain noeud (baseNode)
@@ -63,20 +59,35 @@ public class Bellman {
 
 			//Si le noeud ne comporte aucun arc sortant, on brise l'algorithme
 			if(outEdges.isEmpty()) {
-			    System.out.println("\nSTOP : Aucun arc sortant");
-				break;
+                if(breakAlgo)
+                    break;
+                if (baseNode.getId() + 1 >= graph.getNodes().size()) {
+                    baseNode = graph.getNodeById((baseNode.getId() + 1) - graph.getNodes().size());
+                } else {
+                    baseNode = graph.getNodeById(baseNode.getId() + 1);
+                }
+                if(baseNode == sourceNode)
+                    breakAlgo = true;
+                continue;
 			}
 
 			//Pour chaque arc sortant, nous l'analysons
 			for(Edge edge : outEdges) {
 			    //Si l'ancienne valeur additionnée à l'arc courant est plus petit, nous le remplaçons dans la table pi
                 boolean estPlusPetit = (next.get(edge.getSource().getId()) + edge.getDistance()) < next.get(edge.getDestination().getId());
+
                 if(next.get(edge.getDestination().getId()) == Graph.inf){
                     next.set(edge.getDestination().getId(), edge.getDistance() + piTable.get(k - 1).get(edge.getSource().getId()));
-                    nextRLine.set(edge.getDestination().getId(), baseNode.getId());
+                    nextRLine.set(edge.getDestination().getId(), edge.getSource().getId());
+
                 }else if(next.get(edge.getDestination().getId()) != Graph.inf && estPlusPetit) {
                     next.set(edge.getDestination().getId(), piTable.get(k - 1).get(edge.getSource().getId()) + edge.getDistance());
-                    nextRLine.set(edge.getDestination().getId(), baseNode.getId());
+                    nextRLine.set(edge.getDestination().getId(), edge.getSource().getId());
+
+                    if(next.get(edge.getDestination().getId()) < piTable.get(k - 1).get(edge.getDestination().getId())){
+                        baseNode = edge.getDestination();
+                        continue;
+                    }
                 }
 			}
 
@@ -93,12 +104,15 @@ public class Bellman {
                 piTable.add(next);
                 rTable.add(nextRLine);
                 k++;
+            }else{
+                if (baseNode.getId() + 1 >= graph.getNodes().size()) {
+                    baseNode = graph.getNodeById((baseNode.getId() + 1) - graph.getNodes().size());
+                } else {
+                    baseNode = graph.getNodeById(baseNode.getId() + 1);
+                }
             }
-            if (baseNode.getId() + 1 > graph.getNodes().size()) {
-                baseNode = graph.getNodeById((baseNode.getId() + 1) - graph.getNodes().size());
-            } else {
-                baseNode = graph.getNodeById(baseNode.getId() + 1);
-            }
+
+
 		}
 		if(k == graph.getNodes().size())
 		    System.out.println("\nSTOP : k = n");
@@ -108,82 +122,62 @@ public class Bellman {
 		//Compl�ter
         //Init de variables
         StringBuilder chemin = new StringBuilder("\n\n");
-        Stack<Node> path = new Stack<>();
-        int ligne = this.rTable.size() - 1;
-        int noeud = this.sourceNode.getId();
-        boolean contientNegatif = false;
+        List<Stack<Node>> path = new ArrayList<>();
 
-        //Si le graphe contient un chemin négatif, faut concaténer la notification
-        if(this.rTable.get(this.rTable.size() - 1).get(this.sourceNode.getId()) == this.sourceNode.getId() &&
-                this.piTable.get(this.rTable.size() - 1).get(this.sourceNode.getId()) < 0){
-            chemin.append("==> Le graphe contient un circuit de cout négatif :\n");
+        //Parcourir dans le sens inverse les noeuds du graphe pour ajouter les noeuds dans le bon
+        // ordre
+        boolean contientBoucle = false;
+        int indiceBoucle = -1;
+        int pathBoucle = -1;
+        for(int i = 0; i < this.graph.getNodes().size(); i++){
+            int ligne = this.rTable.size() - 1;
+            int noeud = i;
+            Stack<Node> pileChemin = new Stack<>();
+            if(this.rTable.get(ligne).get(noeud) != -1){
+                //Jusqu'à ce que l'on trouve un -1 (indice de noeud impossible) comme parent,
+                // on ajoute l'indice à la pile
 
-            //Marque à true pour l'affichage ci-dessous
-            contientNegatif = true;
-            //Parcourir la table R pour ajouter les noeuds parents à la pile
-            while(this.rTable.get(ligne).get(noeud) != -1){
-                path.push(this.graph.getNodeById(noeud));
-                noeud = this.rTable.get(ligne).get(noeud);
-                ligne--;
-            }
-
-        }else {
-            chemin.append("==> Les chemins sont :");
-            //Parcourir dans le sens inverse les noeuds du graphe pour ajouter les noeuds dans le bon
-            // ordre
-            for(int i = this.graph.getNodes().size() - 1; i >= 0; i--){
-                ligne = this.rTable.size() - 1;
-                noeud = i;
-                if(this.rTable.get(ligne).get(noeud) != -1){
-
-                    //Jusqu'à ce que l'on trouve un -1 (indice de noeud impossible) comme parent,
-                    // on ajoute l'indice à la pile
-                    while(this.rTable.get(ligne).get(noeud) != -1){
-                        path.push(this.graph.getNodeById(noeud));
-                        noeud = this.rTable.get(ligne).get(noeud);
-                        ligne--;
+                while(this.rTable.get(ligne).get(noeud) != -1 && !contientBoucle){
+                    if(pileChemin.contains(this.graph.getNodeById(noeud))) {
+                        contientBoucle = pileChemin.contains(this.graph.getNodeById(noeud));
+                        indiceBoucle = this.graph.getNodeById(noeud).getId();
+                        pathBoucle = i;
                     }
-                    //On ajoute le noeud source à la fin de chaque chemin pour faciliter l'affichage
-                    // ci-bas
-                    path.push(this.sourceNode);
+                    pileChemin.push(this.graph.getNodeById(noeud));
+                    noeud = this.rTable.get(ligne).get(noeud);
+                    ligne--;
                 }
+                pileChemin.push(this.sourceNode);
+                path.add(pileChemin);
             }
+            if(contientBoucle)
+                break;
         }
 
-        //Vérification que la pile n'est pas vide
-        if(!path.empty()){
-
-            //Procédure lorsqu'il y a un circuit de coût négatif
-            if(contientNegatif){
-                chemin.append("[" + sourceNode.getName() + " - " + sourceNode.getName() + "] : ");
-                chemin.append(path.pop().getName());
-                while (!path.empty()) {
-                    chemin.append(" -> ");
-                    chemin.append(path.pop().getName());
-                }
-            }else{
-                //Deux StringBuilder pour faciliter la concaténation
-                StringBuilder crochets = new StringBuilder(chemin + "\n[" + path.pop().getName() + " - ");
-
-                //Noeud qui marque le dernier de chaque chemin, facilite la recherche du coût et l'affichage
-                // du nom
+        if(contientBoucle){
+            chemin.append("\n\n==> Le graphe contient un circuit de coût négatif :\n");
+            Node noeudBase = graph.getNodeById(indiceBoucle);
+            chemin.append("[" + noeudBase.getName() + " - " + noeudBase.getName() + "] : ");
+            path.get(pathBoucle -1).pop();
+            chemin.append(path.get(pathBoucle -1).pop().getName());
+            while(!path.get(pathBoucle -1).empty() && !path.get(pathBoucle -1).peek().equals(noeudBase)){
+                chemin.append(" -> ");
+                chemin.append(path.get(pathBoucle -1).pop().getName());
+            }
+            chemin.append(" -> ");
+            chemin.append(noeudBase.getName());
+        }else{
+            //Deux StringBuilder pour faciliter la concaténation
+            StringBuilder crochets = new StringBuilder("\n\n==> Les chemins sont :");
+            for(int i = 0; i < path.size(); i++){
                 Node dernier = new Node(-1,"");
+                crochets.append("\n[" + path.get(i).pop().getName() + " - ");
                 chemin = new StringBuilder(sourceNode.getName());
-
-                while(!path.empty()) {
-                    if (path.peek().getId() != this.sourceNode.getId()) {
-                        chemin.append(" -> ");
-                        dernier = path.pop();
-                        chemin.append(dernier.getName());
-                    } else {
-                        crochets.append(dernier.getName() + "] " +
-                                        this.piTable.get(this.piTable.size() - 1).get(dernier.getId()) + " : ");
-                        crochets.append(chemin);
-                        crochets.append("\n[" + path.pop().getName() + " - ");
-                        chemin = new StringBuilder(sourceNode.getName());
-                    }
+                while(!path.get(i).empty()){
+                    chemin.append(" -> ");
+                    dernier = path.get(i).pop();
+                    chemin.append(dernier.getName());
                 }
-                //Concaténer les crochets avant le chemin, réinitialiser le chemin
                 crochets.append(dernier.getName() + "] " +
                         this.piTable.get(this.piTable.size() - 1).get(dernier.getId()) + " : ");
                 crochets.append(chemin);
@@ -191,42 +185,47 @@ public class Bellman {
             }
         }
         System.out.println(chemin);
-	}
+    }
 
 	public void displayTables() {
 	 //Compl�ter
-		System.out.print("pi Table\n");
+		System.out.print("<< PiTable >>:\n\t\t");
+		int k = 0;
 		for(Node node : graph.getNodes()) {
 			System.out.print(node.getName());
-			System.out.print("    ");
+			System.out.print("\t");
 		}
 		System.out.print("\n");
 		for(Vector<Double> vec : piTable) {
+		    System.out.print(k + "\t:\t");
 			for(Double el: vec) {
 				if(el.equals(graph.inf))
 					System.out.print("inf");
 				else	
 					System.out.print(el);
-				System.out.print("  ");
+				System.out.print("\t");
 			}
+			k++;
 			System.out.print("\n");
 		}
 		
-		System.out.print("\n\nR Table\n");
-		
+		System.out.print("\n\n<< RTable >>:\nk\t:\t");
+		k = 0;
 		for(Node node : graph.getNodes()) {
 			System.out.print(node.getName());
-			System.out.print("  ");
+			System.out.print("\t");
 		}
 		System.out.print("\n");
 		for(Vector<Integer> vec : rTable) {
+            System.out.print(k + "\t:\t");
 			for(Integer el: vec) {
 				if(el.equals(-1)) 
 					System.out.print("-");
 				else
-					System.out.print(el);
-				System.out.print("  ");
+					System.out.print(graph.getNodeById(el).getName());
+				System.out.print("\t");
 			}
+            k++;
 			System.out.print("\n");
 		}
 	}
