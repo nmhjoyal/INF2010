@@ -38,15 +38,26 @@ public class Graph {
 			while ((sCurrentLine = br.readLine()) != null) {
 				char[] Arcs = sCurrentLine.toCharArray();
 				index=0;
+				boolean isNegative = false;
 				for (char i : Arcs) {
 					if (i == sepChar){
 						index++;
 					}
 					if (i != sepChar && i!='0' && i!='i' && i!='n' && i!='f'){
-						int dist = (int) i - 48;
-						Node source = getNodeById(indexNoeudOut);
-						Node dest = getNodeById(index);
-						edges.add(new Edge(source, dest, dist));
+                        int dist;
+					    if(i == '-'){
+					        isNegative = true;
+                        }else{
+					        if(isNegative) {
+                                dist = -1 * ((int) i - 48);
+                                isNegative = false;
+                            }else
+                                dist = (int) i - 48;
+                            Node source = getNodeById(indexNoeudOut);
+                            Node dest = getNodeById(index);
+                            edges.add(new Edge(source, dest, dist));
+                        }
+
 					}
 				}
 			indexNoeudOut++;

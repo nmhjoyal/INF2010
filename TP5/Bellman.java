@@ -69,7 +69,7 @@ public class Bellman {
                 }
                 //On casse la boucle si les arcs sortants sont nuls et que le prochain noeud
                 // est le noeud source
-                if(baseNode == sourceNode)
+                if(baseNode.getId() >= sourceNode.getId())
                     breakAlgo = true;
                 continue;
 			}
@@ -98,7 +98,10 @@ public class Bellman {
 
 			//Test l'égalité des lignes
             boolean ligneEstPareille = true;
+			boolean supInf = false;
             for(int i = 0; i < graph.getNodes().size(); i++){
+                if(next.get(i) > Graph.inf)
+                    supInf = true;
                 if(!next.get(i).equals(piTable.get(k - 1).get(i))){
                     ligneEstPareille = false;
 
@@ -106,23 +109,21 @@ public class Bellman {
             }
 
             //On ajoute la ligne et incrémente k seulement si celle-là est différente
-            if(!ligneEstPareille) {
+            if(!ligneEstPareille && !supInf) {
                 piTable.add(next);
                 rTable.add(nextRLine);
                 k++;
             }else{
-                //Si les lignes sont pareils, nous voulons passer au prochain noeud s'il existe
+                //Si les lignes sont pareilles, nous voulons passer au prochain noeud s'il existe
+                if(supInf)
+                    break;
                 if (baseNode.getId() + 1 >= graph.getNodes().size()) {
                     baseNode = graph.getNodeById((baseNode.getId() + 1) - graph.getNodes().size());
                 } else {
                     baseNode = graph.getNodeById(baseNode.getId() + 1);
                 }
             }
-
-
 		}
-		if(k == graph.getNodes().size())
-		    System.out.println("\nSTOP : k = n");
 	}
 	
 	public void  diplayShortestPaths() {
