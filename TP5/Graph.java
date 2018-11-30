@@ -21,6 +21,7 @@ public class Graph {
 		BufferedReader br = null;
 		FileReader fr = null;
 		char sepChar = separator.charAt(0);
+		Boolean nextNeg =false;
 		try {
 			fr = new FileReader(filePath);
 			br = new BufferedReader(fr);
@@ -42,7 +43,18 @@ public class Graph {
 					if (i == sepChar){
 						index++;
 					}
-					if (i != sepChar && i!='0' && i!='i' && i!='n' && i!='f'){
+					if (i=='-'){
+						nextNeg=true;
+					}
+					if (i != sepChar && i!='0' && i!='i' && i!='n' && i!='f' && i!='-'){
+						if(nextNeg){
+							int dist = (int) i - 48;
+							dist=-1*dist;
+							Node source = getNodeById(indexNoeudOut);
+							Node dest = getNodeById(index);
+							edges.add(new Edge(source, dest, dist));
+							nextNeg=false;
+						}
 						int dist = (int) i - 48;
 						Node source = getNodeById(indexNoeudOut);
 						Node dest = getNodeById(index);

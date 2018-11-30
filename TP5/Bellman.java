@@ -12,7 +12,7 @@ public class Bellman {
 	private Node sourceNode;
 	private List<Vector<Double>> piTable =  new ArrayList<Vector<Double>>();
 	private List<Vector<Integer>> rTable =  new ArrayList<Vector<Integer>>();
-	
+	static final double inf = 99999;
 	public Bellman (Graph g) {
 		this.graph = g;
 	}
@@ -21,81 +21,6 @@ public class Bellman {
 		this.sourceNode = source;
 	}
 	
-	// public void shortestPath() {
-	// 	// Compl�ter
-
-	// 	Vector<Double> init = new Vector<>();
-	// 	Vector<Integer> initR = new Vector<>();
-		
-	// 	for(int i = 0; i < graph.getNodes().size(); i++) {
-	// 		if(i == sourceNode.getId()) {
-	// 			init.add(0.0);
-	// 			initR.add(-1);
-	// 		}else {
-	// 			init.add(graph.inf);
-	// 			initR.add(-1);
-	// 		}
-	// 	}
-	// 	piTable.add(init);
-	// 	rTable.add(initR);
-		
-	// 	int k = 1;
-	// 	Node baseNode = graph.getNodeById(k);
-		
-	// 	while (k < graph.getNodes().size()) {
-	// 		//Init nouvelle ligne
-	// 		Vector<Double> next = new Vector<>();
-	// 		Vector<Integer> nextRLine = new Vector<>();
-			
-	// 		//On reprend les valeurs de la ligne précédente
-	// 		for(int i = 0; i < graph.getNodes().size(); i++) {
-	// 			if(i == sourceNode.getId()) {
-	// 				next.add(0.0);
-	// 				nextRLine.add(-1);
-	// 			}else {
-	// 				next.add(piTable.get(k - 1).get(i));
-	// 				nextRLine.add(rTable.get(k - 1).get(i));
-	// 			}
-	// 		}
-
-	// 		//Retourne la liste les arcs sortants du prochain noeud (baseNode)
-	// 		List<Edge> outEdges = graph.getOutEdges(baseNode);
-
-	// 		//Si le noeud ne comporte aucun arc sortant, on brise l'algorithme
-	// 		if(outEdges.isEmpty()) {
-	// 			break;
-	// 		}
-
-	// 		for(Edge edge : outEdges) {
-    //             if(edge.getDestination().getId() != sourceNode.getId()) {
-    //                 boolean estPlusPetit = piTable.get(k - 1).get(baseNode.getId()) + edge.getDistance() < piTable.get(k - 1).get(baseNode.getId());
-    //                 if (next.get(baseNode.getId()) != Graph.inf && estPlusPetit)
-    //                     next.set(edge.getDestination().getId(), piTable.get(k - 1).get(baseNode.getId()) + edge.getDistance());
-    //                 else
-    //                     next.set(edge.getDestination().getId(), edge.getDistance());
-
-    //                 nextRLine.set(edge.getDestination().getId(), baseNode.getId());
-    //             }
-	// 		}
-
-	// 		//Test l'égalité des lignes
-    //         boolean ligneEstPareille = true;
-    //         for(int i = 0; i < graph.getNodes().size(); i++){
-    //             if(!next.get(i).equals(piTable.get(k - 1).get(i))){
-    //                 ligneEstPareille = false;
-    //                 break;
-    //             }
-    //         }
-    //         //On casse l'algorithme si les deux dernières lignes sont pareilles
-    //         if(ligneEstPareille)
-    //             break;
-    //         piTable.add(next);
-    //         rTable.add(nextRLine);
-	// 		k++;
-	// 		baseNode = graph.getNodeById(k);
-	// 	}
-		
-	// }
 	public void shortestPath() {
 		// Compl�ter
 
@@ -106,7 +31,7 @@ public class Bellman {
 				init.add(0.0);
 				initR.add(-1);
 			}else {
-				init.add(graph.inf);
+				init.add(inf);
 				initR.add(-1);
 			}
 		}
@@ -117,24 +42,20 @@ public class Bellman {
 		Node baseNode = sourceNode;
 		Vector<Node> currentAccessibleNodes = new Vector<>();
 		currentAccessibleNodes.add(baseNode);
-		while (k < graph.getNodes().size()) {
-			//Init nouvelle ligne
-			Vector<Double> next = new Vector<>();
-			Vector<Integer> nextRLine = new Vector<>();
-
-			//On reprend les valeurs de la ligne précédente
-			for(int i = 0; i < graph.getNodes().size(); i++) {
-				next.add(piTable.get(k - 1).get(i));
-				nextRLine.add(rTable.get(k - 1).get(i));
-			}
+		while (k <= graph.getNodes().size()) {
+			//Init nouvelle ligne, On reprend les valeurs de la ligne précédente
+			Vector<Double> next = new Vector(piTable.get(k-1));
+			Vector<Integer> nextRLine = new Vector(rTable.get(k-1));
+			// On sauvegarde l'etat de currentAcccessibleNodes, puisqu'il peut changer
 			Vector<Node> accessibleNodes = new Vector(currentAccessibleNodes);
 			for(Node node: accessibleNodes){
 
 				//Retourne la liste les arcs sortants du prochain noeud à analyser (node)
 				List<Edge> outEdges = graph.getOutEdges(node);
 
-				//Si le noeud ne comporte aucun arc sortant, on passe au prochain
+				//Si le noeud ne comporte aucun arc sortant, on passe au prochain noeud
 				if(outEdges.isEmpty()) {
+					System.out.print("skip\n");
 					continue;
 				}
 				
@@ -143,31 +64,27 @@ public class Bellman {
 					double suggestedPathLength = next.get(node.getId()) + edge.getDistance();
 					//Chemin actuel
 					double currentPathLength = next.get(edge.getDestination().getId());
-					// Si le chemin suggéré est meilleur on le met dans les tables
+					// Si le chemin suggéré est meilleur
 					if (suggestedPathLength<currentPathLength){
-						if (currentPathLength==graph.inf){
+						//Si le noeud etait auparavant innaccessible, on l'ajoute aux noeuds accessibles
+						if (currentPathLength==inf){
+							System.out.print("node added\n");
 							currentAccessibleNodes.add(edge.getDestination());
 						}
+						//on ajoute le nouveau chemin dans les tables
 						next.set(edge.getDestination().getId(),suggestedPathLength);
 						nextRLine.set(edge.getDestination().getId(), node.getId());
 					}
 				}
 			}
 			
-
-			//Test l'égalité des lignes
-            boolean ligneEstPareille = true;
-            for(int i = 0; i < graph.getNodes().size(); i++){
-                if(!next.get(i).equals(piTable.get(k - 1).get(i))){
-                    ligneEstPareille = false;
-                    break;
-                }
-            }
-            //On casse l'algorithme si les deux dernières lignes sont pareilles
-            if(ligneEstPareille)
-                break;
-            piTable.add(next);
-            rTable.add(nextRLine);
+			// Si les 2 dernieres itérations sont pareilles, on break
+			if (nextRLine.equals(rTable.get(k-1))){
+				System.out.print("test worked\n");
+				break;
+			}
+			piTable.add(next);
+			rTable.add(nextRLine);
 			k++;
 		}
 		
@@ -254,7 +171,7 @@ public class Bellman {
 		for(Vector<Double> vec : piTable) {
 			System.out.print(k+"    :    ");
 			for(Double el: vec) {
-				if(el.equals(graph.inf))
+				if(el.equals(inf))
 					System.out.print("inf");
 				else	
 					System.out.print(el);
